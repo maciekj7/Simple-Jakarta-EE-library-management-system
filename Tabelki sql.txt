@@ -1,0 +1,62 @@
+CREATE DATABASE library_db;
+USE library_db;
+
+CREATE TABLE users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    card_number VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    full_name VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE books (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
+    isbn VARCHAR(13) NOT NULL UNIQUE,
+    is_available BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE loans (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    book_id BIGINT NOT NULL,
+    loan_date DATETIME NOT NULL,
+    due_date DATETIME NOT NULL,
+    return_date DATETIME,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+CREATE TABLE reservations (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    book_id BIGINT NOT NULL,
+    reservation_date DATETIME NOT NULL,
+    expiration_date DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+INSERT INTO users (card_number, password, full_name, role) VALUES 
+('111', 'haslo111', 'Jan Kowalski', 'EMPLOYEE'),
+('129', 'haslo129', 'Maciej Jurek, 'READER'),
+('130', 'haslo130', 'Paweł Czytelniczy', 'READER');
+
+INSERT INTO books (title, author, isbn, is_available) VALUES 
+('Władca Pierścieni', 'J.R.R. Tolkien', '9788375780635', true),
+('Harry Potter i Kamień Filozoficzny', 'J.K. Rowling', '9788380082144', true),
+('Wiedźmin - Ostatnie Życzenie', 'Andrzej Sapkowski', '9788375780642', true),
+('1984', 'George Orwell', '9788377589274', true),
+('Hobbit', 'J.R.R. Tolkien', '9788375780666', true);
+
+INSERT INTO loans (user_id, book_id, loan_date, due_date) VALUES 
+(2, 1, NOW(), DATE_ADD(NOW(), INTERVAL 30 DAY));
+
+INSERT INTO reservations (user_id, book_id, reservation_date, expiration_date) VALUES 
+(3, 2, NOW(), DATE_ADD(NOW(), INTERVAL 3 DAY));
+
+UPDATE books SET is_available = false WHERE id = 2;
+UPDATE books SET is_available = false WHERE id = 3;
+
+select * from users;
